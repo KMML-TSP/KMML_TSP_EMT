@@ -1,0 +1,21 @@
+.stMainBlockContainer {
+    padding: 1rem 20rem 1rem;
+}
+
+.stVerticalBlock > [data-testid="stVerticalBlockBorderWrapper"] {
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;       
+}
+
+[data-testid="stHeadingWithActionElements"] {
+    display: flex;
+    justify-content: center;
+    align-items: center;       
+    flex-direction: column;
+}
+
+[data-testid="stMarkdownContainer"] {
+    font-size: 18px;
+}
