@@ -1,12 +1,41 @@
+/* Background Image */
+.stApp {
+    background-image: url('https://github.com/KMML-TSP/KMML_TSP_EMT/blob/main/Images/bg3.jpg?raw=true'); 
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    height: 100vh;
+    max-height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+/* Hide Deploy Header */
+.stAppHeader  {
+    display: none !important;
+}
+
+/* Adjusting Layout */
 .stMainBlockContainer {
     padding: 1rem 20rem 1rem;
 }
 
 .stVerticalBlock > [data-testid="stVerticalBlockBorderWrapper"] {
     padding: 20px;
+    
+    /* Centering Content */
     display: flex;
     justify-content: center;
-    align-items: center;       
+    align-items: center;   
+    
+    /* Blurry Transparent Background  */
+    background: rgba(255, 255, 255, 0.1); 
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px); 
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 [data-testid="stHeadingWithActionElements"] {
@@ -18,4 +47,20 @@
 
 [data-testid="stMarkdownContainer"] {
     font-size: 18px;
+}
+
+/* Image Border */
+[data-testid="stImageContainer"] > img {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1), 0 0 8px rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap');
+
+[data-testid="stHeadingWithActionElements"] h1 {
+  font-family: 'Orbitron', sans-serif;
+  /* color: #837C7C; */
 }
