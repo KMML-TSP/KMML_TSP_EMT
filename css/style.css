@@ -1,6 +1,9 @@
+
 /* Background Image */
 .stApp {
-    background-image: url('https://github.com/KMML-TSP/KMML_TSP_EMT/blob/main/Images/bg3.jpg?raw=true'); 
+    background-image: 
+        linear-gradient(rgba(0, 0, 0, 0.411), rgba(0, 0, 0, 0.397)), 
+        url('https://github.com/KMML-TSP/KMML_TSP_EMT/blob/main/Images/bg3.jpg?raw=true');
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;
@@ -10,6 +13,8 @@
     padding: 0;
     overflow: hidden;
 }
+
+
 
 /* Hide Deploy Header */
 .stAppHeader  {
@@ -49,18 +54,25 @@
     font-size: 18px;
 }
 
-/* Image Border */
-[data-testid="stImageContainer"] > img {
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1), 0 0 8px rgba(255, 255, 255, 0.15);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    background-color: rgba(255, 255, 255, 0.03);
+.stHorizontalBlock .stColumn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap');
 
-[data-testid="stHeadingWithActionElements"] h1 {
-  font-family: 'Orbitron', sans-serif;
-  /* color: #837C7C; */
+/* Reserve space for alert message */
+.alert-space {
+  height: 90px;
+  width: 100%;
 }
+
+/* Optional: improve vertical stability */
+[data-testid="column"] > div:has(.alert-space) {
+  min-height: 60px;
+}
+
+
+
+
