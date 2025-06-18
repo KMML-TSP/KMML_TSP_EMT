@@ -1,0 +1,17 @@
+WORKFLOW:
+
+- The Current users created are admin, manager, staff, intern
+- All users are stored in same Table separated by role column.
+- Admin is already created & logged in.
+- Password Encryption must be done.
+- After Admin Home page created, Admin will create other user's accounts by assigning an user_id, name, role, email given manually by user.
+- Password is empty for now.
+- User can signup with admin given userid & email, then the password is mailed to the user, it can be later changed.
+
+
+TODO: 
+1. Remove select user & replace it with email (in Signup Page), since user role is fixed no need to select that.
+2. Add password input column in signup page.
+3. Admin Page
+4. Encrypt Password
+5. User Page

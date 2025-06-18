@@ -54,25 +54,11 @@
     font-size: 18px;
 }
 
-.stHorizontalBlock .stColumn {
+/* .stHorizontalBlock .stColumn {
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-}
-
-
-/* Reserve space for alert message */
-.alert-space {
-  height: 90px;
-  width: 100%;
-}
-
-/* Optional: improve vertical stability */
-[data-testid="column"] > div:has(.alert-space) {
-  min-height: 60px;
-}
-
-
+} */
 
 
