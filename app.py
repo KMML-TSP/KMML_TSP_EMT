@@ -1,169 +1,222 @@
+# Libraries Used:
+
+# 1. For App Creation
 import streamlit as st
 import mysql.connector as conn
+# 2. For Emailing Users
+import smtplib
+from email.message import EmailMessage
+import random
 
-# SQL - Database
 
-# Database connection
+
+# SQL - Database:
+
+# 1. Database connection
 mydb = conn.connect(host="localhost",user="root",passwd="tspemt",database="tsp_emt")
-# Cursor creation
+# 2. Cursor creation
 mycursor = mydb.cursor()
-
-# User Authentication
-def authenticate_user(userid):
-    sql = "SELECT * FROM users WHERE user_id=%s"
-    val = (userid,)
+    
+# 3. Email Authentication
+def authenticate_mail(email):
+    sql = "SELECT id FROM users WHERE email=%s"
+    val = (email,)
     mycursor.execute(sql, val)
     result = mycursor.fetchone()
     if result:
         return True
 
-# Login Authentication
-def authenticate_login(userid, password):
-    sql = "SELECT * FROM users WHERE user_id=%s AND pass=%s"
-    val = (userid, password)
-    mycursor.execute(sql, val)
-    result = mycursor.fetchone()
-    if result:
-        return True
-
-# Signup Authentication
-def authenticate_signup(usertype, userid):
-    sql = "SELECT * FROM users WHERE role=%s AND user_id=%s"
-    val = (usertype, userid)
+# 4. Login Authentication
+def authenticate_login(email, password):
+    sql = "SELECT id FROM users WHERE email=%s AND pass=%s"
+    val = (email, password)
     mycursor.execute(sql, val)
     result = mycursor.fetchone()
     if result:
         return True
     
-# Already Created Check
-def already_created(userid):
-    sql = "SELECT is_active FROM users WHERE user_id=%s"
-    val = (userid,)
+# 5. Already Created Check
+def already_created(email):
+    sql = "SELECT is_active FROM users WHERE email=%s"
+    val = (email,)
     mycursor.execute(sql, val)
     result = mycursor.fetchone()
     if result == (1,):
         return True
+    
+# 6. User Account Creation
+def create_user(password, email):
+    sql = "UPDATE users SET pass=%s, is_active=%s WHERE email=%s"
+    val = (password, 1, email)
+    mycursor.execute(sql, val)
+    mydb.commit()
+    return True
+
+# 7. User Role Identification
+def identify_role(email):
+    sql = "SELECT role FROM users WHERE email=%s"
+    val = (email,)
+    mycursor.execute(sql, val)
+    result = mycursor.fetchone()
+    if result:
+        return result[0]
+    
 
 
-# UI Components
+# Send Email:
+def send_password_email(usermail, password):
+    # Company Mail Credentials
+    EMAIL_ADDRESS = "kmmltspemt@gmail.com"
+    EMAIL_PASSWORD = "tspemt@123"
 
-# Set up the page
-st.set_page_config(page_title="KMML Login", page_icon="Images/KMML.png", layout="wide")
+    # Mail content
+    msg = EmailMessage()
+    msg['Subject'] = "KMML Account Signup - Verification Password"
+    msg['From'] = EMAIL_ADDRESS
+    msg['To'] = usermail
+    msg.set_content(f"Your signup verification password is: {password}\n\nKMML EMT Team")
 
-# Inject external CSS
+    try:
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+            smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+            smtp.send_message(msg)
+            return True
+    except Exception as e:
+        print(f"Email failed: {e}")
+        return False
+
+
+
+# UI Components:
+
+# 1. Set up the page
+st.set_page_config(page_title="KMML Login", page_icon="images/KMML.png", layout="wide")
+
+# 2. Inject external CSS
 with open("css/style.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-# Initialize session state
+# 3. Initialize session state
 if "select" not in st.session_state:
     st.session_state.select = "login"
 
-# Web Pages
+# 4. Web Pages
 class Pages:
-    # Login Page
+    # 4.1 Login Page
     def login(self):
-        # with col1:
-        #     st.image("Images/KMML_TSP.jpg")
+        # Header
+        st.header("Login")
 
-        with col2:
-            # Header
-            st.header("Login")
+        # Input fields
+        usermail = st.text_input("User Email", key="usermail_input").strip()
+        password = st.text_input("Password", type="password", key="password_input")
 
-            # Input fields
-            userid = st.text_input("User ID", key="userid_input")
-            password = st.text_input("Password", type="password", key="password_input")
+        if st.button("Login", key="login_button"):
+            if usermail and password:
+                if authenticate_mail(usermail):
+                    if authenticate_login(usermail, password):
+                        st.success("Login successful!")
 
-            btn, alert = st.columns([3.5, 6.5])
-
-            if btn.button("Login", key="login_button"):
-                if userid and password:
-                    if userid.isdigit():
-                        userid = int(userid)
-                        if authenticate_user(userid):
-                            if authenticate_login(userid, password):
-                                alert.success("Login successful!")
-                            else:
-                                alert.error("Incorrect Password!")
-                        else:
-                            alert.error("Invalid User ID!")
+                        # Next Page Navigation
+                        user_role = identify_role(usermail)
+                        st.session_state["email"] = usermail
+                        st.switch_page(user_role)
                     else:
-                        alert.error("Invalid User ID!")
+                        st.error("Incorrect Password!")
                 else:
-                    alert.error("Please fill the forms.")
+                    st.error("Invalid email address!")
+            else:
+                st.error("Please fill in all the fields.")
 
-    # Signup Page
+
+    # 4.2 Signup Page
     def signup(self):
-        # with col1:
-        #     st.image("Images/KMML_TSP.jpg")
+        # Header
+        st.header("Signup")
 
-        with col2:
-            # Header
-            st.header("Signup")
+        # Input fields
+        usermail = st.text_input("User Email", key="usermail_input").strip()
+        password = st.text_input("Password", type="password", key="password_input")
 
-            # Input fields
-            usertype = st.selectbox("Select your Role", ["Admin", "Manager", "Staff", "Intern"], key="usertype_input")
-            userid = st.text_input("User ID", key="userid_input")
+        btn1, btn2 = st.columns([5,4], gap="small")
+        
+        # Get Password
+        if btn1.button("Get Password", key="get_password_button"):
+            if usermail:
+                if authenticate_mail(usermail):
+                    if already_created(usermail):
+                        # Generate 6-digit numeric password
+                        mailed_password = str(random.randint(100000, 999999))
+                        st.session_state["mailed_password"] = mailed_password
 
-            btn, alert = st.columns([4, 6])
-
-            # Signup button
-            if btn.button("Signup", key="signup_button"):
-                if usertype and userid:
-                    if userid.isdigit():
-                        userid = int(userid)
-                        if authenticate_user(userid):
-                            if not already_created(userid):
-                                if authenticate_signup(usertype, userid):
-                                    st.session_state.select = "create_account"
-                                    st.rerun()
-                                else:
-                                    alert.error("Invalid User Type!")
-                            else:
-                                alert.error("Account already exists!")
+                        # Send email to usermail
+                        if send_password_email(usermail, st.session_state["mailed_password"]):
+                            st.success("Password has been sent to your email.")
                         else:
-                            alert.error("Invalid User ID!")
+                            st.error("Failed to send email. Try again.")
                     else:
-                        alert.error("Invalid User ID!")
+                        st.error("This account is already created!")
                 else:
-                    alert.error("Please fill the forms.")
+                    st.error("Email is not in the company list!")
+            else:
+                st.error("Please enter your email!")
 
-    # Create Account Page
-    def create_account(self):
-        # with col1:
-            # st.image("Images/KMML_TSP.jpg")
+        # Signup
+        if btn2.button("Signup", key="signup_button"):
+            if usermail and password:
+                if authenticate_mail(usermail):
+                    if already_created(usermail):
+                        if password == st.session_state["mailed_password"]:
+                            if create_user(password, usermail):
+                                st.success("Signup successful!")
 
-        with col2:
-            # Header
-            st.header("Create Account")
+                                # Next Page Navigation
+                                user_role = identify_role(usermail)
+                                st.write(user_role)
+                                st.session_state["email"] = usermail
+                                # st.switch_page(f"pages/{user_role}.py")
+                                # st.switch_page(f"pages/admin.py")
+                                # st.switch_page("Admin")
+                                st.switch_page(user_role)
+                            else:
+                                st.error("Failed to create account!")
+                        else:
+                            st.error("Incorrect Verification Password!")
+                    else:
+                        st.error("This account is already created!")
+                else:
+                    st.error("Email is not in the company list!")
+            else:
+                st.error("Please fill in all the fields.")
 
 
 
-# NavBar
+# 5. NavBar
 blank, title, btn1, btn2 = st.columns([1, 6, 1.5, 1.5], vertical_alignment="bottom", gap="small")
 
-# Title image (logo)
-title.image("Images/KMML.png")
+# 5.1 Title image (logo)
+title.image("images/KMML.png")
 
-# Buttons
+# 5.2 Buttons
 if btn1.button("Login"):
     st.session_state.select = "login"
 if btn2.button("Signup"):
     st.session_state.select = "signup"
 
-# Main content area
-main_container = st.container(height=400)
+# 6. Main content area
+main_container = st.container()
 
+# 7. Object to switch pages
 pages = Pages()
 
-# Page content
+# 8. Page content
 with main_container:
     col1, col2 = st.columns([5.5, 4.5], gap="medium")
 
-    col1.image("Images/KMML_TSP.jpg")
+    col1.image("images/KMML_TSP.jpg")
 
-    if st.session_state.select == "login":
-        pages.login()
-    elif st.session_state.select == "signup":
-        pages.signup()
-    elif st.session_state.select == "create_account":
-        pages.create_account()
+    with col2:
+        if st.session_state.select == "login":
+            pages.login()
+        elif st.session_state.select == "signup":
+            pages.signup()

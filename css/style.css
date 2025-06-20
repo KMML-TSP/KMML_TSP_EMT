@@ -3,7 +3,7 @@
 .stApp {
     background-image: 
         linear-gradient(rgba(0, 0, 0, 0.411), rgba(0, 0, 0, 0.397)), 
-        url('https://github.com/KMML-TSP/KMML_TSP_EMT/blob/main/Images/bg3.jpg?raw=true');
+        url('https://github.com/KMML-TSP/KMML_TSP_EMT/blob/main/images/bg3.jpg?raw=true');
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;
@@ -54,11 +54,10 @@
     font-size: 18px;
 }
 
-/* .stHorizontalBlock .stColumn {
+.stColumn {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    flex-wrap: wrap;
-} */
+}
 
 
